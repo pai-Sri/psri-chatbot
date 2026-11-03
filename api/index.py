@@ -18,9 +18,9 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 genai.configure(api_key=GEMINI_API_KEY)
 
-# ใช้ Gemini 2.5 Flash และให้ตอบกลับเป็นรูปแบบ JSON เสมอ
+# ใช้ Gemini 3.8 Flash และให้ตอบกลับเป็นรูปแบบ JSON เสมอ
 model = genai.GenerativeModel(
-    'gemini-2.5-flash',
+    'gemini-3.8-flash',
     generation_config={"response_mime_type": "application/json"}
 )
 
