@@ -55,12 +55,26 @@ def get_monthly_summary(chat_id):
     # PostgREST normally returns a list of row dictionaries. Also accept JSON
     # strings in case the result (or an individual row) was serialized upstream.
     if isinstance(data, str):
-        data = json.loads(data)
+        if not data.strip():
+            data = []
+        else:
+            try:
+                data = json.loads(data)
+            except json.JSONDecodeError:
+                app.logger.error(
+                    "Unexpected transactions response: expected JSON, got string (%d chars)",
+                    len(data),
+                )
+                return "อ่านข้อมูลรายการจากฐานข้อมูลไม่สำเร็จครับ กรุณาตรวจรูปแบบข้อมูลใน Supabase"
     if isinstance(data, dict):
         data = [data]
     if not isinstance(data, list):
         raise ValueError("Unexpected transactions response format")
-    data = [json.loads(item) if isinstance(item, str) else item for item in data]
+    try:
+        data = [json.loads(item) if isinstance(item, str) else item for item in data]
+    except json.JSONDecodeError:
+        app.logger.error("A transaction row contains a string that is not valid JSON")
+        return "ข้อมูลรายการในฐานข้อมูลมีรูปแบบไม่ถูกต้องครับ กรุณาตรวจตาราง transactions ใน Supabase"
     if any(not isinstance(item, dict) for item in data):
         raise ValueError("Transaction rows must be JSON objects")
     
