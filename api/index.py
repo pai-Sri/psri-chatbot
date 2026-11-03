@@ -51,6 +51,18 @@ def get_monthly_summary(chat_id):
     # ดึงข้อมูลจากฐานข้อมูลของเดือนปัจจุบันและเฉพาะแชทนี้
     db_response = supabase.table("transactions").select('*').eq('chat_id', chat_id).execute()
     data = db_response.data
+
+    # PostgREST normally returns a list of row dictionaries. Also accept JSON
+    # strings in case the result (or an individual row) was serialized upstream.
+    if isinstance(data, str):
+        data = json.loads(data)
+    if isinstance(data, dict):
+        data = [data]
+    if not isinstance(data, list):
+        raise ValueError("Unexpected transactions response format")
+    data = [json.loads(item) if isinstance(item, str) else item for item in data]
+    if any(not isinstance(item, dict) for item in data):
+        raise ValueError("Transaction rows must be JSON objects")
     
     if not data:
         return "ยังไม่มีรายการในเดือนนี้ครับ"
