@@ -120,6 +120,8 @@ def webhook():
             send_telegram_message(chat_id, reply_msg)
             
         except Exception as e:
-            send_telegram_message(chat_id, "❌ P.Sri ไม่เข้าใจข้อมูลครับ ลองพิมพ์ใหม่ เช่น 'กินข้าว 50 บาท'")
+            error_msg = f"❌ เกิดข้อผิดพลาด: {str(e)}"
+        send_telegram_message(chat_id, error_msg)
+        print(error_msg)
             
     return jsonify({"status": "ok"})
