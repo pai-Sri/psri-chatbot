@@ -49,7 +49,7 @@ def get_monthly_summary(chat_id):
     current_month = datetime.now().strftime('%Y-%m')
     
     # ดึงข้อมูลจากฐานข้อมูลของเดือนปัจจุบันและเฉพาะแชทนี้
-    response = supabase.table("transactions").select("*").eq("chat_id", chat_id).execute()
+    response = supabase.table("transactions").select("*").eq("chat_id", chat_id).execute().data
     data = response.data
     
     if not data:
